@@ -43,6 +43,10 @@ if !exists('g:cpp_auto_include_includes_base_dirs')
   let g:cpp_auto_include_includes_base_dir = ['src']
 endif
 
+if !exists('g:cpp_auto_include_line_threshold')
+  let g:cpp_auto_include_line_threshold = 1000
+endif
+
 ruby << EOF
 module VIM
   # make VIM's builtin VIM ruby module a little easier to use
@@ -233,7 +237,7 @@ module CppAutoInclude
 
 
     def process
-      return if $curbuf.length > LINES_THRESHOLD
+      return if $curbuf.length > VIM::getConfigVar('line_theshold')
 
       begin
         use_std, includes, content = false, *includes_and_content
