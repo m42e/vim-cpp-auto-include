@@ -84,11 +84,15 @@ module VIM
 		end
 
 		def useTagBasedIncludes()
-		  return evaluate("g:cpp_auto_include_includes_from_tagfile")
+		  return getConfigVar("includes_from_tagfile")
 		end
 
 		def getSrcDirs()
-		  return evaluate("g:cpp_auto_include_includes_base_dir")
+		  return getConfigVar("includes_base_dir")
+		end
+
+		def getConfigVar(var)
+			return evaluate("g:cpp_auto_include_" + var)
 		end
 
   end
