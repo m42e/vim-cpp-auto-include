@@ -174,7 +174,7 @@ module CppAutoInclude
 		def updateTags()
 			@entry = {}
 			VIM::getTagFilenames().each do |filename|
-				return if ! File.exists? filename
+				next if ! File.exists? filename
 				file = File.new(filename, "r")
 				file.each do |line|
 					# we need to have the kind of the tag 
@@ -214,6 +214,7 @@ module CppAutoInclude
         raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
 			end
 		end
+
 		def getTagFileHeaders(use_std, includes, content)
 			begin
 				@entry.map do |name, file|
