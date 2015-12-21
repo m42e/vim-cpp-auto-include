@@ -177,8 +177,10 @@ module CppAutoInclude
 				return if ! File.exists? filename
 				file = File.new(filename, "r")
 				file.each do |line|
-					symbolname, file, grepexp, type = line.chomp.split("\t")
-					if type.eql? "c" 
+					# we need to have the kind of the tag 
+					symbolname, file, grepexp, kind = line.chomp.split("\t")
+					# only look at class definitions
+					if kind.eql? "c" 
 						VIM::getSrcDirs().each { |dir| file = file.sub dir+'/', '' }
 						@entry[symbolname] = file
 					end
