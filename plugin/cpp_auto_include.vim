@@ -145,12 +145,8 @@ module CppAutoInclude
       [includes, content]
     end
 
-    def process
-      return if $curbuf.length > LINES_THRESHOLD
-
+		def getStdHeadersNeeded(use_std, includes, content)
       begin
-        use_std, includes, content = false, *includes_and_content
-
         # process each header
         HEADER_STD_COMPLETE_REGEX.each do |header, std, complete, regex|
           has_header  = includes.detect { |l| l.first.include? "<#{header}>" }
@@ -170,6 +166,19 @@ module CppAutoInclude
             includes = includes_and_content.first
           end
         end
+      rescue => ex
+        # VIM hide backtrace information by default, re-raise with backtrace
+        raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
+			end
+		end
+
+    def process
+      return if $curbuf.length > LINES_THRESHOLD
+
+      begin
+        use_std, includes, content = false, *includes_and_content
+
+				getStdHeadersNeeded(use_std, includes, content)
 
         # append empty line to last #include 
         # or remove top empty lines if no #include
