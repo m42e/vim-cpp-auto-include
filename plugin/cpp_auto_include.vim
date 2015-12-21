@@ -33,6 +33,16 @@ let g:loaded_cpp_auto_include = "true"
 autocmd BufWritePre /tmp/**.cc :ruby CppAutoInclude::process
 autocmd BufWritePre /tmp/**.cpp :ruby CppAutoInclude::process
 
+" Settings
+
+if !exists('g:cpp_auto_include_includes_from_tagfile')
+  let g:cpp_auto_include_includes_from_tagfile = 1
+endif
+
+if !exists('g:cpp_auto_include_includes_base_dirs')
+  let g:cpp_auto_include_includes_base_dir = ['src']
+endif
+
 ruby << EOF
 module VIM
   # make VIM's builtin VIM ruby module a little easier to use
@@ -69,6 +79,18 @@ module VIM
         break if i >= $curbuf.length
       end
     end
+		def getTagFilenames()
+		  return evaluate("tagfiles()")
+		end
+
+		def useTagBasedIncludes()
+		  return evaluate("g:cpp_auto_include_includes_from_tagfile")
+		end
+
+		def getSrcDirs()
+		  return evaluate("g:cpp_auto_include_includes_base_dir")
+		end
+
   end
 end
 
