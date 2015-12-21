@@ -219,13 +219,16 @@ module CppAutoInclude
 			end
 		end
 
-		def getTagFileHeaders(use_std, includes, content)
+		def getTagFileHeaders(use_std, includes, content, force_delete)
 			begin
 				@entry.map do |name, file|
 					has_header  = includes.detect { |l| l.first.include? "\"#{file}\"" }
 					has_keyword = (content =~ /#{name}/)
           if has_keyword && !has_header
             VIM::append(includes.last.last, "#include \"#{file}\"")
+            includes = includes_and_content.first
+          elsif force_delete && !has_keyword && has_header
+            VIM::remove(has_header.last)
             includes = includes_and_content.first
           end
 				end
@@ -236,7 +239,7 @@ module CppAutoInclude
 		end
 
 
-    def process
+    def process(force_delete)
       return if $curbuf.length > VIM::getConfigVar('line_theshold')
 
       begin
@@ -244,7 +247,7 @@ module CppAutoInclude
 				updateTags()
 
 				getStdHeadersNeeded(use_std, includes, content)
-				getTagFileHeaders(use_std, includes, content)
+				getTagFileHeaders(use_std, includes, content, force_delete)
 
         # append empty line to last #include 
         # or remove top empty lines if no #include
