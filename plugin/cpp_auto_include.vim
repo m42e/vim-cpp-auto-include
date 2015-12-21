@@ -167,6 +167,21 @@ module CppAutoInclude
       [includes, content]
     end
 
+		def updateTags()
+			@entry = {}
+			VIM::getTagFilenames().each do |filename|
+				return if ! File.exists? filename
+				file = File.new(filename, "r")
+				file.each do |line|
+					symbolname, file, grepexp, type = line.chomp.split("\t")
+					if type.eql? "c" 
+						VIM::getSrcDirs().each { |dir| file = file.sub dir+'/', '' }
+						@entry[symbolname] = file
+					end
+				end
+			end
+		end
+
 		def getStdHeadersNeeded(use_std, includes, content)
       begin
         # process each header
@@ -193,14 +208,32 @@ module CppAutoInclude
         raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
 			end
 		end
+		def getTagFileHeaders(use_std, includes, content)
+			begin
+				@entry.map do |name, file|
+					has_header  = includes.detect { |l| l.first.include? "\"#{file}\"" }
+					has_keyword = (content =~ /#{name}/)
+          if has_keyword && !has_header
+            VIM::append(includes.last.last, "#include \"#{file}\"")
+            includes = includes_and_content.first
+          end
+				end
+      rescue => ex
+        # VIM hide backtrace information by default, re-raise with backtrace
+        raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
+			end
+		end
+
 
     def process
       return if $curbuf.length > LINES_THRESHOLD
 
       begin
         use_std, includes, content = false, *includes_and_content
+				updateTags()
 
 				getStdHeadersNeeded(use_std, includes, content)
+				getTagFileHeaders(use_std, includes, content)
 
         # append empty line to last #include 
         # or remove top empty lines if no #include
