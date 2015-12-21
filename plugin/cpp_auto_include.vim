@@ -157,9 +157,6 @@ module CppAutoInclude
   USING_STD       = 'using namespace std;'
 	USING_STD_REGEX = /using namespace std;|std::/
 
-  # do nothing if lines.count > LINES_THRESHOLD
-  LINES_THRESHOLD = 1000
-
   class << self
     def includes_and_content
       # split includes and other content
