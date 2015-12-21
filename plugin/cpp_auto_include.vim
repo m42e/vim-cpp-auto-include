@@ -155,6 +155,7 @@ module CppAutoInclude
   ]
 
   USING_STD       = 'using namespace std;'
+	USING_STD_REGEX = /using namespace std;|std::/
 
   # do nothing if lines.count > LINES_THRESHOLD
   LINES_THRESHOLD = 1000
@@ -193,45 +194,33 @@ module CppAutoInclude
 		end
 
 		def getStdHeadersNeeded(use_std, includes, content)
-      begin
-        # process each header
-        HEADER_STD_COMPLETE_REGEX.each do |header, std, regex|
-          has_header  = includes.detect { |l| l.first.include? "<#{header}>" }
-					if (std)
-						rex = Regexp.new "(std::)("+regex.source+")"
-					else 
-						rex = regex
-					end
-          has_keyword = (has_header && !complete) || (content =~ rex)
-          use_std ||= std && has_keyword && $1 != "std::"
-
-          if has_keyword && !has_header
-            VIM::append(includes.last.last, "#include <#{header}>")
-            includes = includes_and_content.first
-          elsif !has_keyword && has_header && complete
-            VIM::remove(has_header.last)
-            includes = includes_and_content.first
-          end
-        end
-      rescue => ex
-        # VIM hide backtrace information by default, re-raise with backtrace
-        raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
+			# process each header
+			HEADER_STD_COMPLETE_REGEX.each do |header, std, regex|
+				includetag = "<#{header}>"
+				has_keyword = addInclude(content, regex, includes, includetag)
+				use_std ||= std && has_keyword
 			end
 		end
 
 		def getTagFileHeaders(use_std, includes, content, force_delete)
+			@entry.map do |name, file|
+				includetag = "\"#{file}\""
+				addInclude(content, /[^::]#{name}/, includes, includetag, force_delete)
+			end
+		end
+
+		def addInclude(content, regex, includes, includetag, force_delete = true)
 			begin
-				@entry.map do |name, file|
-					has_header  = includes.detect { |l| l.first.include? "\"#{file}\"" }
-					has_keyword = (content =~ /#{name}/)
-          if has_keyword && !has_header
-            VIM::append(includes.last.last, "#include \"#{file}\"")
-            includes = includes_and_content.first
-          elsif force_delete && !has_keyword && has_header
-            VIM::remove(has_header.last)
-            includes = includes_and_content.first
-          end
-				end
+        has_header  = includes.detect { |l| l.first.include? includetag }
+				has_keyword = content =~ regex
+        if has_keyword && !has_header
+          VIM::append(includes.last.last, "#include #{includetag}")
+          includes = includes_and_content.first
+        elsif force_delete && !has_keyword && has_header
+          VIM::remove(has_header.last)
+          includes = includes_and_content.first
+        end
+				return has_keyword
       rescue => ex
         # VIM hide backtrace information by default, re-raise with backtrace
         raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
@@ -239,8 +228,8 @@ module CppAutoInclude
 		end
 
 
-    def process(force_delete)
-      return if $curbuf.length > VIM::getConfigVar('line_theshold')
+    def process(force_delete = false)
+      return if $curbuf.length > VIM::getConfigVar('line_threshold')
 
       begin
         use_std, includes, content = false, *includes_and_content
@@ -258,7 +247,7 @@ module CppAutoInclude
         end
 
         # add / remove 'using namespace std'
-        has_std = content[USING_STD]
+        has_std = content[USING_STD_REGEX]
 
         if use_std && !has_std && !includes.empty?
           VIM::append(includes.last.last+1, USING_STD) 
