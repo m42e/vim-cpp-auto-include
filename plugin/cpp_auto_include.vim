@@ -107,9 +107,9 @@ end
 
 module CppAutoInclude
   # shortcut to generate regex
-  C = proc do |*names| names.map { |name| /\b?#{name}\b/ } end
-  F = proc do |*names| names.map { |name| /\b?#{name}\s*\(/ } end
-  T = proc do |*names| names.map { |name| /\b?#{name}\s*<\b/ } end
+  C = proc do |*names| names.map { |name| /\b#{name}\b/ } end
+  F = proc do |*names| names.map { |name| /\b#{name}\s*\(/ } end
+  T = proc do |*names| names.map { |name| /\b#{name}\s*<\b/ } end
   R = proc do |*regexs| Regexp.union(regexs.flatten) end
 
   # header, std namespace, keyword complete (false: no auto remove #include), unioned regex
