@@ -217,10 +217,10 @@ module CppAutoInclude
 				has_keyword = content =~ regex
         if has_keyword && !has_header
           VIM::appendLine(includes.last.last, "#include #{includetag}")
-          includes = includes_and_content.first
+          includes = includes.first
         elsif force_delete && !has_keyword && has_header
           VIM::remove(has_header.last)
-          includes = includes_and_content.first
+          includes = includes.first
         end
 				return has_keyword
       rescue => ex
