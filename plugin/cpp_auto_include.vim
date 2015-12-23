@@ -80,6 +80,11 @@ module VIM
         break if i >= $curbuf.length
       end
     end
+
+		def getCurrentFilename()
+			return $curbuf.name.split("/").last
+		end
+
 		def getTagFilenames()
 		  return evaluate("tagfiles()")
 		end
@@ -177,10 +182,13 @@ module CppAutoInclude
 				file = File.new(filename, "r")
 				file.each do |line|
 					# we need to have the kind of the tag 
+					if ! line.valid_encoding?
+						  line = line.encode("UTF-16be", :invalid=>:replace, :replace=>"?").encode('UTF-8')
+						end
 					symbolname, file, grepexp, kind = line.chomp.split("\t")
 					# only look at class definitions
-					if kind.eql? "c" 
-						VIM::getSrcDirs().each { |dir| file = file.sub dir+'/', '' }
+					if kind.eql? "c" and file !~ /#{VIM::getCurrentFilename()}/
+						VIM::getSrcDirs().each { |dir| file = file.gsub(/^#{dir}\//, '') }
 						@entry[symbolname] = file
 					end
 				end
