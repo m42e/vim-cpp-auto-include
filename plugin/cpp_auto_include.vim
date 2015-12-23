@@ -207,7 +207,7 @@ module CppAutoInclude
 		def getTagFileHeaders(use_std, includes, content, force_delete)
 			@entry.map do |name, file|
 				includetag = "\"#{file}\""
-				addInclude(content, /[^::]#{name}/, includes, includetag, force_delete)
+				addInclude(content, /(([^::]|<|,)\b*#{name})/, includes, includetag, force_delete)
 			end
 		end
 
