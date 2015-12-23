@@ -30,9 +30,6 @@ endif
 
 let g:loaded_cpp_auto_include = "true"
 
-autocmd BufWritePre /tmp/**.cc :ruby CppAutoInclude::process
-autocmd BufWritePre /tmp/**.cpp :ruby CppAutoInclude::process
-
 " Settings
 
 if !exists('g:cpp_auto_include_includes_from_tagfile')
