@@ -56,11 +56,11 @@ module VIM
     end
 
     # if the line after #i != content,
-    # append content after line #i
-    def append(i, content)
+    # appendLine content after line #i
+    def appendLine(i, content)
       return false if ($curbuf.length >= i+1 && $curbuf[i+1] == content) 
       cursor = $curwin.cursor
-      $curbuf.append(i, content)
+      $curbuf.appendLine(i, content)
       $curwin.cursor = [cursor.first+1,cursor.last] if cursor.first >= i
     end
 
@@ -216,7 +216,7 @@ module CppAutoInclude
         has_header  = includes.detect { |l| l.first.include? includetag }
 				has_keyword = content =~ regex
         if has_keyword && !has_header
-          VIM::append(includes.last.last, "#include #{includetag}")
+          VIM::appendLine(includes.last.last, "#include #{includetag}")
           includes = includes_and_content.first
         elsif force_delete && !has_keyword && has_header
           VIM::remove(has_header.last)
@@ -240,20 +240,20 @@ module CppAutoInclude
 				getStdHeadersNeeded(use_std, includes, content)
 				getTagFileHeaders(use_std, includes, content, force_delete)
 
-        # append empty line to last #include 
+        # appendLine empty line to last #include 
         # or remove top empty lines if no #include
         if includes.last.last == 0
           VIM::remove(1, '')
         else
-          VIM::append(includes.last.last, '')
+          VIM::appendLine(includes.last.last, '')
         end
 
         # add / remove 'using namespace std'
         has_std = content[USING_STD_REGEX]
 
         if use_std && !has_std && !includes.empty?
-          VIM::append(includes.last.last+1, USING_STD) 
-          VIM::append(includes.last.last+2, '')
+          VIM::appendLine(includes.last.last+1, USING_STD) 
+          VIM::appendLine(includes.last.last+2, '')
         elsif !use_std && has_std
           VIM::remove(nil, USING_STD)
           VIM::remove(1, '') if includes.last.last == 0
