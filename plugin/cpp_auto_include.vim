@@ -60,7 +60,7 @@ module VIM
     def appendLine(i, content)
       return false if ($curbuf.length >= i+1 && $curbuf[i+1] == content) 
       cursor = $curwin.cursor
-      $curbuf.appendLine(i, content)
+      $curbuf.append(i, content)
       $curwin.cursor = [cursor.first+1,cursor.last] if cursor.first >= i
     end
 
@@ -119,14 +119,14 @@ module CppAutoInclude
     ['atomic'        , true , true , R[T['atomic_']] ],
     ['bitset'        , true , true , R[T['bitset']] ],
     ['bitset'        , true , true , R[T['bitset']] ],
-    ['cassert'       , false, true , R[FP['assert']] ],
+    ['cassert'       , false, true , R[F['assert']] ],
     ['chrono'        , true , true , R[C['chrono::duration', 'chrono::time_point']],],
-    ['cmath'         , false, true , R[FP['pow[fl]?','a?(?:sin|cos|tan)[hl]*', 'atan2[fl]?', 'exp[m12fl]*', 'fabs[fl]?', 'log[210fl]+', 'nan[fl]?', '(?:ceil|floor)[fl]?', 'l?l?round[fl]?', 'sqrt[fl]?'], CP['M_[A-Z24_]*', 'NAN', 'INFINITY', 'HUGE_[A-Z]*']] ],
+    ['cmath'         , false, true , R[F['pow[fl]?','a?(?:sin|cos|tan)[hl]*', 'atan2[fl]?', 'exp[m12fl]*', 'fabs[fl]?', 'log[210fl]+', 'nan[fl]?', '(?:ceil|floor)[fl]?', 'l?l?round[fl]?', 'sqrt[fl]?'], C['M_[A-Z24_]*', 'NAN', 'INFINITY', 'HUGE_[A-Z]*']] ],
     ['complex'       , true , true , R[T['complex']] ],
-    ['cstdio'        , false, true , R[FP['s?scanf', 'puts', 's?printf', 'f?gets', '(?:get|put)char', 'getc'], CP['FILE','std(?:in|out|err)','EOF']] ],
-    ['cstdlib'       , false, true , R[FP['system','abs','ato[if]', 'itoa', 'strto[dflu]+','free','exit','l?abs','s?rand(?:_r|om)?','qsort'], CP['EXIT_[A-Z]*', 'NULL']] ],
-    ['cstring'       , false, true , R[FP['mem(?:cpy|set|n?cmp)', 'str(?:len|n?cmp|n?cpy|error|cat|str|chr)']] ],
-    ['ctime'         , false, true , R[FP['time', 'clock'], CP['CLOCKS_PER_SEC']]],
+    ['cstdio'        , false, true , R[F['s?scanf', 'puts', 's?printf', 'f?gets', '(?:get|put)char', 'getc'], C['FILE','std(?:in|out|err)','EOF']] ],
+    ['cstdlib'       , false, true , R[F['system','abs','ato[if]', 'itoa', 'strto[dflu]+','free','exit','l?abs','s?rand(?:_r|om)?','qsort'], C['EXIT_[A-Z]*', 'NULL']] ],
+    ['cstring'       , false, true , R[F['mem(?:cpy|set|n?cmp)', 'str(?:len|n?cmp|n?cpy|error|cat|str|chr)']] ],
+    ['ctime'         , false, true , R[F['time', 'clock'], C['CLOCKS_PER_SEC']]],
     ['cuchar'        , true , true , R[F['mbrtoc(?:16|32)', 'c(?:16|32)rtomb']] ],
     ['deque'         , true , true , R[T['deque']] ],
     ['forward_list'  , true , true , R[T['forward_list']] ],
@@ -144,12 +144,12 @@ module CppAutoInclude
     ['set'           , true , true , R[T['(?:multi)?set']] ],
     ['sstream'       , true , true , R[C['[io]?stringstream']] ],
     ['string'        , true , true , R[C['string']] ],
-    ['strings.h'     , false, true , R[FP['b(?:cmp|copy|zero)', 'strn?casecmp']] ],
+    ['strings.h'     , false, true , R[F['b(?:cmp|copy|zero)', 'strn?casecmp']] ],
     ['thread'        , true , true , R[C['thread'], F['this_thread::yield', 'this_thread::get_id', 'this_thread::sleep_until', 'this_thread::sleep_for']],],
     ['tuple'         , true , true , R[T['tuple'], F['make_tuple', 'tie', 'tuple_cat', 'forward_as_tuple']] ],
     ['type_traits'   , true , true , R[T['is_void', 'is_null_pointer', 'is_integral', 'is_floating_point', 'is_array', 'is_pointer', 'is_lvalue_reference', 'is_rvalue_reference', 'is_member_object_pointer', 'is_member_function_pointer', 'is_enum', 'is_union', 'is_class', 'is_function', 'is_reference', 'is_arithmetic', 'is_fundamental', 'is_object', 'is_scalar', 'is_compound', 'is_member_pointer', 'is_const', 'is_volatile', 'is_trivial', 'is_trivially_copyable', 'is_standard_layout', 'is_pod', 'is_literal_type', 'is_empty', 'is_polymorphic', 'is_abstract', 'is_signed', 'is_unsigned', 'is_constructible', 'is_default_constructible', 'is_copy_constructible', 'is_move_constructible', 'is_assignable', 'is_copy_assignable', 'is_move_assignable', 'is_destructible', 'is_trivially_constructible', 'is_trivially_default_constructible', 'is_trivially_copy_constructible', 'is_trivially_move_constructible', 'is_trivially_assignable', 'is_trivially_copy_assignable', 'is_trivially_move_assignable', 'is_trivially_destructible', 'is_nothrow_constructible', 'is_nothrow_default_constructible', 'is_nothrow_copy_constructible', 'is_nothrow_move_constructible', 'is_nothrow_assignable', 'is_nothrow_copy_assignable', 'is_nothrow_move_assignable', 'is_nothrow_destructible', 'has_virtual_destructor', 'alignment_of', 'rank', 'extent', 'is_same', 'is_base_of', 'is_convertible', 'remove_const', 'remove_volatile', 'remove_cv', 'add_const', 'add_volatile', 'add_cv', 'remove_reference', 'add_lvalue_reference', 'add_rvalue_reference', 'make_signed', 'make_unsigned', 'remove_extent', 'remove_all_extents', 'remove_pointer', 'add_pointer', 'aligned_storage', 'decay', 'enable_if', 'conditional', 'common_type', 'underlying_type', 'result_of']] ],
     ['typeindex'     , true , true , R[T['type_index']] ],
-    ['typeinfo'      , false, true , R[CP['typeid']] ],
+    ['typeinfo'      , false, true , R[C['typeid']] ],
     ['unordered_map' , true , true , R[T['unordered_(?:multi)?map']] ],
     ['unordered_set' , true , true , R[T['unordered_(?:multi)?set']] ],
     ['utility'       , true , true , R[T['pair'], F['make_pair', 'forward', 'exchange']] ],
@@ -157,9 +157,10 @@ module CppAutoInclude
   ]
 
   USING_STD       = 'using namespace std;'
-	USING_STD_REGEX = /using namespace std;|std::/
+  USING_STD_REGEX = /using namespace std;|std::/
 
   class << self
+    @lastline = 0
     def includes_and_content
       # split includes and other content
       includes, content = [['', 0]], ''
@@ -175,59 +176,59 @@ module CppAutoInclude
       [includes, content]
     end
 
-		def updateTags()
-			@entry = {}
-			VIM::getTagFilenames().each do |filename|
-				next if ! File.exists? filename
-				file = File.new(filename, "r")
-				file.each do |line|
-					# we need to have the kind of the tag 
-					if ! line.valid_encoding?
-						  line = line.encode("UTF-16be", :invalid=>:replace, :replace=>"?").encode('UTF-8')
-						end
-					symbolname, file, grepexp, kind = line.chomp.split("\t")
-					# only look at class definitions
-					if kind.eql? "c" and file !~ /#{VIM::getCurrentFilename()}/
-						VIM::getSrcDirs().each { |dir| file = file.gsub(/^#{dir}\//, '') }
-						@entry[symbolname] = file
-					end
-				end
-			end
-		end
+    def updateTags()
+      @entry = {}
+      VIM::getTagFilenames().each do |filename|
+        next if ! File.exists? filename
+        file = File.new(filename, "r")
+        file.each do |line|
+          # we need to have the kind of the tag 
+          if ! line.valid_encoding?
+              line = line.encode("UTF-16be", :invalid=>:replace, :replace=>"?").encode('UTF-8')
+            end
+          symbolname, file, grepexp, kind = line.chomp.split("\t")
+          # only look at class definitions
+          if kind.eql? "c" and file !~ /#{VIM::getCurrentFilename()}/
+            VIM::getSrcDirs().each { |dir| file = file.gsub(/^#{dir}\//, '') }
+            @entry[symbolname] = file
+          end
+        end
+      end
+    end
 
-		def getStdHeadersNeeded(use_std, includes, content)
-			# process each header
-			HEADER_STD_COMPLETE_REGEX.each do |header, std, regex|
-				includetag = "<#{header}>"
-				has_keyword = addInclude(content, regex, includes, includetag)
-				use_std ||= std && has_keyword
-			end
-		end
+    def getStdHeadersNeeded(use_std, includes, content)
+      # process each header
+      HEADER_STD_COMPLETE_REGEX.each do |header, std, complete, regex|
+        includetag = "<#{header}>"
+        has_keyword = addInclude(content, regex, includes, includetag)
+        use_std ||= std && has_keyword
+      end
+    end
 
-		def getTagFileHeaders(use_std, includes, content, force_delete)
-			@entry.map do |name, file|
-				includetag = "\"#{file}\""
-				addInclude(content, /(([^::]|<|,)\b*#{name})/, includes, includetag, force_delete)
-			end
-		end
+    def getTagFileHeaders(use_std, includes, content, force_delete)
+      @entry.map do |name, file|
+        includetag = "\"#{file}\""
+        addInclude(content, /(([^::]|<|,)\b*#{name})/, includes, includetag, force_delete)
+      end
+    end
 
-		def addInclude(content, regex, includes, includetag, force_delete = true)
-			begin
+    def addInclude(content, regex, includes, includetag, force_delete = true)
+      begin
         has_header  = includes.detect { |l| l.first.include? includetag }
-				has_keyword = content =~ regex
+        has_keyword = content =~ regex
         if has_keyword && !has_header
-          VIM::appendLine(includes.last.last, "#include #{includetag}")
-          includes = includes.first
+          VIM::appendLine(@lastline, "#include #{includetag}")
+          @lastline+=1
         elsif force_delete && !has_keyword && has_header
           VIM::remove(has_header.last)
-          includes = includes.first
+          @lastline-=1
         end
-				return has_keyword
+        return has_keyword
       rescue => ex
         # VIM hide backtrace information by default, re-raise with backtrace
         raise RuntimeError.new("#{ex.message}: #{ex.backtrace}")
-			end
-		end
+      end
+    end
 
 
     def process(force_delete = false)
@@ -235,28 +236,30 @@ module CppAutoInclude
 
       begin
         use_std, includes, content = false, *includes_and_content
-				updateTags()
+        @lastline = includes.last.last
+        updateTags()
 
-				getStdHeadersNeeded(use_std, includes, content)
-				getTagFileHeaders(use_std, includes, content, force_delete)
+        getStdHeadersNeeded(use_std, includes, content)
+        getTagFileHeaders(use_std, includes, content, force_delete)
 
         # appendLine empty line to last #include 
         # or remove top empty lines if no #include
-        if includes.last.last == 0
+        if @lastline == 0
           VIM::remove(1, '')
         else
-          VIM::appendLine(includes.last.last, '')
+          VIM::appendLine(@lastline+1, '')
+          @lastline+=1
         end
 
         # add / remove 'using namespace std'
         has_std = content[USING_STD_REGEX]
 
         if use_std && !has_std && !includes.empty?
-          VIM::appendLine(includes.last.last+1, USING_STD) 
-          VIM::appendLine(includes.last.last+2, '')
+          VIM::appendLine(@lastline+1, USING_STD) 
+          VIM::appendLine(@lastline+2, '')
         elsif !use_std && has_std
           VIM::remove(nil, USING_STD)
-          VIM::remove(1, '') if includes.last.last == 0
+          VIM::remove(1, '') if @lastline == 0
         end
       rescue => ex
         # VIM hide backtrace information by default, re-raise with backtrace
